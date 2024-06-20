@@ -1,5 +1,5 @@
 #include "config_bit.h"  // Inclusion des bits de configuration
-#define _XTAL_FREQ 32000000 // Fréquence de l'oscillateur
+#define _XTAL_FREQ 32000000 // FrÃ©quence de l'oscillateur
 #define Vitesse_son 345 // Vitesse du son en m/s
 //PPS p230
 // Prototypes des fonctions
@@ -12,7 +12,7 @@ void transmettre(unsigned int mesure, unsigned char tab[]);
 void __interrupt() ISR(void); // Routine d'interruption
 
 // Variables globales
-short int ecrire = 0; // Indicateur d'écriture
+short int ecrire = 0; // Indicateur d'Ã©criture
 unsigned int mesure_d = 0; // Mesure du capteur de droite
 unsigned int mesure_c = 0; // Mesure du capteur central
 unsigned int mesure_g = 0; // Mesure du capteur de gauche
@@ -51,16 +51,16 @@ void __interrupt() ISR ( void )
     static short int selec_capteur = 1;
     if ( TMR0IF ) // SI overflow du timer 0 (fin de comptage des 100ms))
     {
-        // Réinitialiser le Timer0 pour la prochaine période de comptage
+        // RÃ©initialiser le Timer0 pour la prochaine pÃ©riode de comptage
         TMR0H = 0x3C; // Partie haute du registre TMR0 (0x3C)
         TMR0L = 0xB0; // Partie basse du registre TMR0 (0xB0)
         TMR0IF = 0;   // RAZ du flag TMR0IF
 
-        // Réinitialiser le Timer SMT1
+        // RÃ©initialiser le Timer SMT1
         SMT1TMR = 0; // RAZ du timer SMT1
-        SMT1CON1=SMT1CON1|0x80; //ob1000 0000 Déclencher le SMT1 (GO)
+        SMT1CON1=SMT1CON1|0x80; //ob1000 0000 DÃ©clencher le SMT1 (GO)
 
-        // Sélectionner le capteur et générer une impulsion
+        // SÃ©lectionner le capteur et gÃ©nÃ©rer une impulsion
         switch (selec_capteur)
         {
             case 1:
@@ -90,14 +90,14 @@ void __interrupt() ISR ( void )
                     
         }
     }
-    if ( SMT1PWAIF )// Vérifier si le drapeau d'interruption de largeur d'impulsion SMT1 est levé
+    if ( SMT1PWAIF )// VÃ©rifier si le drapeau d'interruption de largeur d'impulsion SMT1 est levÃ©
     {
       SMT1PWAIF=0;  // RAZ du flag d'interruption de largeur d'impulsion SMT1
       unsigned long int mesure=0;
       mesure=SMT1CPW; // Lire la mesure du SMT1
       // Calculer la distance (mm) en utilisant la mesure
       mesure=(mesure*(1/32000000.0)*Vitesse_son/2.0*1000.0);
-      // Stocker la mesure en fonction du capteur sélectionné
+      // Stocker la mesure en fonction du capteur sÃ©lectionnÃ©
       switch (selec_capteur)
         {
             case 1:
@@ -112,7 +112,7 @@ void __interrupt() ISR ( void )
             case 3:
                 mesure_g=mesure; // Stocker la mesure pour le capteur gauche
                 selec_capteur=1;
-                ecrire=1; // Déclencher l'envoi des mesures
+                ecrire=1; // DÃ©clencher l'envoi des mesures
                 break;
             default :
                 selec_capteur=1;
@@ -145,22 +145,22 @@ void config_SMT(void)
  /* 
  Bits de SMT1CON0 :
  1 : SMT enable (activation du SMT)
- x : Non utilisé (toujours à 0)
- 0 : Le compteur se réinitialise à l'interruption SMT1PR
- 0x : La fenêtre se déclenche sur le front montant
- 0 : SMT actif-haut / front montant activé
- 0 : SMT incrémente sur le front montant du signal d'horloge sélectionné
- 00 : Diviseur de fréquence (prescaler) 1:1
+ x : Non utilisÃ© (toujours Ã  0)
+ 0 : Le compteur se rÃ©initialise Ã  l'interruption SMT1PR
+ 0x : La fenÃªtre se dÃ©clenche sur le front montant
+ 0 : SMT actif-haut / front montant activÃ©
+ 0 : SMT incrÃ©mente sur le front montant du signal d'horloge sÃ©lectionnÃ©
+ 00 : Diviseur de frÃ©quence (prescaler) 1:1
  */
 
  // Configuration du registre SMT1CON1
  SMT1CON1 = 0x01; // 0b0000 0001
  /* 
  Bits de SMT1CON1 :
- 0 : GO (Incrémentation et acquisition de données désactivées)
+ 0 : GO (IncrÃ©mentation et acquisition de donnÃ©es dÃ©sactivÃ©es)
  0 : single acquisition
- x : Non utilisé (toujours à 0)
- x : Non utilisé (toujours à 0)
+ x : Non utilisÃ© (toujours Ã  0)
+ x : Non utilisÃ© (toujours Ã  0)
  0001 : gated timer mode
  */
 
@@ -168,42 +168,42 @@ void config_SMT(void)
  SMT1CLK = 0x01; // 0b0000 0001
  /* 
  Bits de SMT1CLK :
- xxxxx : Non utilisé (toujours à 0)
+ xxxxx : Non utilisÃ© (toujours Ã  0)
  001 : Source d'horloge Fosc
  */
 
  // Configuration du registre SMT1SIG
- SMT1SIG = 0x00; // Pin sélectionnée par SMT1SIGPPS p328
+ SMT1SIG = 0x00; // Pin sÃ©lectionnÃ©e par SMT1SIGPPS p328
  /* 
  Bits de SMT1SIG :
- Tout à 0 : Utilise la broche sélectionnée par SMT1SIGPPS
+ Tout Ã  0 : Utilise la broche sÃ©lectionnÃ©e par SMT1SIGPPS
  */
 }
 void config_timer0(void)// 10HZ
 {
  // Configuration du registre T0CON0
  // 0x90 = 0b1001 0000
- // 1 (bit 7) : Timer0 activé
- // 0 (bit 6) : Non utilisé (toujours à 0)
+ // 1 (bit 7) : Timer0 activÃ©
+ // 0 (bit 6) : Non utilisÃ© (toujours Ã  0)
  // 1 (bit 5) : Mode 16 bits
- // 0000 (bits 4-0) : Post-diviseur à 1:1
+ // 0000 (bits 4-0) : Post-diviseur Ã  1:1
  T0CON0 = 0x90;
 
  // Configuration du registre T0CON1
  // 0x54 = 0b0101 0100
  // 010 (bits 7-5) : Source d'horloge Fosc/4
- // 1 (bit 4) : Synchronisation désactivée
- // 0100 (bits 3-0) : Pré-diviseur à 1:16
+ // 1 (bit 4) : Synchronisation dÃ©sactivÃ©e
+ // 0100 (bits 3-0) : PrÃ©-diviseur Ã  1:16
  T0CON1 = 0x54;
 
- // Initialisation du registre TMR0 pour générer l'interruption à 10Hz
- // Calcul du préchargement : 65536 - (50000) = 15536
- // En hexadécimal : 15536 = 0x3CB0
+ // Initialisation du registre TMR0 pour gÃ©nÃ©rer l'interruption Ã  10Hz
+ // Calcul du prÃ©chargement : 65536 - (50000) = 15536
+ // En hexadÃ©cimal : 15536 = 0x3CB0
  TMR0H = 0x3C; // Partie haute du registre TMR0 (0x3C)
  TMR0L = 0xB0; // Partie basse du registre TMR0 (0xB0)
     
- // Commentaire sur le calcul de la fréquence
- // Fréquence du Timer = Fosc / (Pré-diviseur * Post-diviseur * (65536 - TMR0))
+ // Commentaire sur le calcul de la frÃ©quence
+ // FrÃ©quence du Timer = Fosc / (PrÃ©-diviseur * Post-diviseur * (65536 - TMR0))
  // 32 MHz / (4*16 * 50000) = 10 Hz
 }
 void init_serie(void)
@@ -236,19 +236,19 @@ void confg_interruption(void)
 {
   TMR0IE=1; // autorisation des interruptions liees au timer0
   SMT1PWAIE=1;  //autorisation des interruptions SMT1 pour la mesure de largeur d'impulsion (Pulse Width Acquisition)
-  PEIE=1; // autorisation des interruptions périphériques
+  PEIE=1; // autorisation des interruptions pÃ©riphÃ©riques
   GIE=1; // autorisation des interruptions globales
 }
 
 void transmettre(unsigned int mesure,unsigned char tab[])
 {
     short int i;
-    // Extraction des milliers, centaines, dizaines et unités de la mesure (mesure en mm)
+    // Extraction des milliers, centaines, dizaines et unitÃ©s de la mesure (mesure en mm)
     unsigned int m = mesure/1000;
     unsigned int dm = mesure%1000/100;
     unsigned int cm = mesure%100/10;
     unsigned int mm = mesure%10;
-    // Conversion des valeurs numériques en caractères ASCII et stockage dans le tableau
+    // Conversion des valeurs numÃ©riques en caractÃ¨res ASCII et stockage dans le tableau
     tab[16] = (m + '0');
     tab[17] = (dm + '0');
     tab[18] = (cm + '0');
