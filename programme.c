@@ -203,7 +203,7 @@ void config_timer0(void)// 10HZ
  TMR0L = 0xB0; // Partie basse du registre TMR0 (0xB0)
     
  // Commentaire sur le calcul de la fréquence
- // Fréquence du Timer = Fosc / (Pré-diviseur * Post-diviseur * (65536 - TMR0))
+ // Fréquence du Timer = Fosc / (4*Pré-diviseur * Post-diviseur * TMR0)
  // 32 MHz / (4*16 * 50000) = 10 Hz
 }
 void init_serie(void)
